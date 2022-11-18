@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".ConnectionActivity">
+
+    <TextView
+        android:id="@+id/connecting_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:fontFamily="@font/assistant_extrabold"
+        android:text="Connecting to Server"
+        android:textColor="@color/black"
+        android:textSize="40sp"
+         />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="300dp"
+        android:src="@drawable/loading"
+        />
+
+</RelativeLayout>
