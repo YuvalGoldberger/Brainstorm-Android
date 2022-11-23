@@ -55,4 +55,5 @@ public class MainActivity extends AppCompatActivity {
     public static Socket getClient() {
         return client;
     }
+    public static void setClient(Socket newClient) { client = newClient; }
 }
