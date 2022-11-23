@@ -21,7 +21,7 @@ public class SendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
 
-        Socket client = MainActivity.getSocket();
+        Socket client = MainActivity.getClient();
 
         sendButton = (Button) findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {

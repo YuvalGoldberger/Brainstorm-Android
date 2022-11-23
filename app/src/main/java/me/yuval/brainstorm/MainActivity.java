@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static Socket getSocket() {
+    public static Socket getClient() {
         return client;
     }
 }
