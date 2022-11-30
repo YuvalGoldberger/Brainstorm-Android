@@ -1,5 +1,7 @@
 package me.yuval.brainstorm;
 
+import static java.lang.System.out;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,8 +9,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class ConnectionActivity extends AppCompatActivity {
 
@@ -29,9 +31,13 @@ public class ConnectionActivity extends AppCompatActivity {
             public void run() {
 
                 try {
+
                     Socket client = new Socket(ip, port);
+
                     MainActivity.setClient(client);
+
                     Intent forwardIntent = new Intent(getApplicationContext(), SendActivity.class);
+
                     forwardIntent.putExtra("ip_port", arr);
                     startActivity(forwardIntent);
 
