@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.*;
@@ -25,20 +26,21 @@ public class ConnectionActivity extends AppCompatActivity {
         String _port = arr[1];
         int port = Integer.parseInt(_port);
 
-
         Thread connectionThread = new Thread(new Runnable() {
             @Override
             public void run() {
-
                 try {
-
                     Socket client = new Socket(ip, port);
 
                     MainActivity.setClient(client);
+                    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+                    String subject = in.readLine();
+                    out.println("Got the subject. " + subject);
 
                     Intent forwardIntent = new Intent(getApplicationContext(), SendActivity.class);
-
-                    forwardIntent.putExtra("ip_port", arr);
+                    forwardIntent.putExtra("ip_port_subj", new String[] {ip, _port, subject});
                     startActivity(forwardIntent);
 
                 } catch (IOException e) {

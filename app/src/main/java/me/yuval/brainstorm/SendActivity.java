@@ -22,58 +22,27 @@ public class SendActivity extends AppCompatActivity {
     private EditText NAME, MESSAGE;
     private Socket client;
     private BufferedReader in;
-    private String subject = "";
-    private int check = 0;
+    private String subj = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
         Intent getExtrasFromMainIntent = getIntent();
-        String[] arr = getExtrasFromMainIntent.getStringArrayExtra("ip_port");
+        String[] arr = getExtrasFromMainIntent.getStringArrayExtra("ip_port_subj");
         String ip = arr[0];
         String port = arr[1];
-
         Toast.makeText(getApplicationContext(), "Connected to " + ip + ":" + port, Toast.LENGTH_SHORT).show();
+        subj = arr[2];
+        Toast.makeText(getApplicationContext(), subj, Toast.LENGTH_SHORT).show();
+
+
 
         client = MainActivity.getClient();
         if(client == null) Toast.makeText(getApplicationContext(), "client is null", Toast.LENGTH_SHORT).show();
 
-        Intent backwardIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-
-
-        Thread recvSubject = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                if(check > 0) {
-                    Toast.makeText(getApplicationContext(), "stopping thread", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-                    try {
-
-                        PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        TextView subj = findViewById(R.id.subject);
-
-                        final String subject = in.readLine();
-                        Toast.makeText(getApplicationContext(), subject, Toast.LENGTH_SHORT).show();
-
-                        subj.setText(subject);
-
-                        out.println("Got the subject.");
-                        check++;
-
-                    } catch (IOException e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                        startActivity(backwardIntent);
-                    }
-                }
-                Looper.loop();
-            }
-        });
-        recvSubject.start();
+        TextView subjTextView = findViewById(R.id.subject);
+        subjTextView.setText(subj);
 
         Thread sendThread = new Thread(new Runnable() {
             @Override
@@ -99,12 +68,13 @@ public class SendActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    Intent backwardIntent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(backwardIntent);
                 }
                 Looper.loop();
 
             }
-            });
+        });
 
 
         sendButton = (Button) findViewById(R.id.send_button);
