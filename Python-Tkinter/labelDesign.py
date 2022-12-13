@@ -6,8 +6,11 @@ import random
 class TextDesign:
     
     def __init__(self):
+        '''
+        ----- Creates a randomized list of options for the text -----
+        '''
 
-        # ----- Randomize font -----
+        # ----- Randomize font + Style -----
         fonts = ["Gan CLM:bold", "Assistant:bold", "Assistant:normal", "MigdalHaemeq:normal", "Stam Ashkenaz CLM:normal", "Comix No2 CLM:bold"]
         self.font = random.choice(fonts)
         

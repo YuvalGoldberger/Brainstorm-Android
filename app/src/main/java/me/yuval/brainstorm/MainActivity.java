@@ -15,34 +15,51 @@ import java.io.*;
 public class MainActivity extends AppCompatActivity {
 
     private Button connectButton;
-    private EditText IP, Port;
+    private EditText IP, Port, Name;
     private static Socket client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /*
+        ----- When application starts it creates this page -----
+        */
+        // ----- Uses AppCompatActivity's onCreate method to create page -----
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ----- Get the connect button and start a event listener (onClick) -----
         connectButton = (Button) findViewById(R.id.connect_button);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
+                ----- Send the name, ip and port to the next page -----
+                */
+
+                // ----- Get the String values from EditTexts -----
                 IP = findViewById(R.id.ip);
                 Port = findViewById(R.id.port);
+                Name = findViewById(R.id.name);
 
                 String ip = IP.getText().toString();
                 String _port = Port.getText().toString();
+                String name = Name.getText().toString();
 
+                // ----- Check if user didn't enter ip, port or name -----
                 if(ip.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Please add IP address.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "הכנס כתובת אייפי.", Toast.LENGTH_SHORT).show();
                     return;
-                } else if(_port.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Please add Port.", Toast.LENGTH_SHORT).show();
+                } if(_port.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "הכנס את פורט השרת.", Toast.LENGTH_SHORT).show();
+                    return;
+                } if (name.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "הכנס את שמך.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
+                // Create an intent of the ConnectionActivity page, add the ip, port and name and start the new activity -----
                 Intent intent = new Intent(getApplicationContext(), ConnectionActivity.class);
-                intent.putExtra("ip_port", new String[] { ip, _port });
+                intent.putExtra("ip_port_name", new String[] { ip, _port, name });
                 startActivity(intent);
 
                 finish();
@@ -53,7 +70,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Socket getClient() {
+        /*
+        ----- Static method of getting client so it can be used everywhere -----
+        */
         return client;
     }
-    public static void setClient(Socket newClient) { client = newClient; }
+    public static void setClient(Socket newClient) {
+        /*
+        ----- Static method of setting the client -----
+        */
+        client = newClient;
+    }
 }

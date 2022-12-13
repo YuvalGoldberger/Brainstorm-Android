@@ -6,16 +6,22 @@ import socket
 import threading
 import glob
 import pyglet
+import time
+import os
 
 from labelDesign import TextDesign
 
+
 class GUI:
+    
+    # ----- Get CurrentWorkingDirectory Path -----
+    folderLocation = os.getcwd()
 
     # ----- Basic values -----
     SCREEN_WIDTH = 1270
     SCREEN_HEIGHT = 720
-    FONT_FOLDER = r'D:\Yuval_Python\Yuval_Final_Proj\Projects-Github\Brainstorm-Android\Brainstorm-Android\Python-Tkinter\Fonts'
-    IMAGE_FOLDER = r'D:\Yuval_Python\Yuval_Final_Proj\Projects-Github\Brainstorm-Android\Brainstorm-Android\Python-Tkinter\CTk_Images'
+    FONT_FOLDER = folderLocation + r'\Fonts'
+    IMAGE_FOLDER = folderLocation + r'\CTk_Images'
     RED_FG = "#7d070f"
     GREEN_FG = "#077d0f"
     BLUE_FG = "#12bdc9"
@@ -28,7 +34,9 @@ class GUI:
     # ------------------------- INITIATE CLASS -------------------------
 
     def __init__(self):
-
+        '''
+        ----- Sets defualt values, creates a screen and a server. -----
+        '''
         # ----- Some defualt Values (that need to be restarted when restarting (calling __init__ again)) -----
         self.MAX_CLIENTS = 50
         self.SERVER_STARTED = False
@@ -80,7 +88,7 @@ class GUI:
 
         # ----- Button to start brainstorm (send subject and start server) -----
 
-        sendSubjectButton = CTkButton(self.screen, text="התחל סיעור מוחות", image=brain, font=("Assistant Medium", 15), command= lambda: self.startServer())
+        sendSubjectButton = CTkButton(self.screen, text="התחל סיעור מוחות", image=brain, font=("Assistant Medium", 15), command= self.startServer)
         sendSubjectButton.place(relx = 0.5, rely = 0.55, anchor=CENTER)
 
         # ----- Mainloop -----
@@ -90,19 +98,37 @@ class GUI:
 
     # ----- Start the server thread -----
     def startServer(self):
-        
+        '''
+        ----- Starts the server thread -----
+        '''
         if self.SERVER_STARTED == False:
-            startServer = threading.Thread(target= lambda: self.sendSubject(), daemon=True)
             self.SUBJECT = self.subjectEntry.get()
-            self.changeWindow()
-            startServer.start()
-            self.SERVER_STARTED = True
+            if len(self.SUBJECT) > 21:
+                # ----- Set text limit -----
+                topLevel = Toplevel(self.screen, bg='#000000')
+                topLevel.geometry('300x100')
+                tempLabel = CTkLabel(topLevel, text="הנושא צריך להיות פחות מ-20 תווים", font=("Assistant Medium", 20), text_color='#ffffff')
+                tempLabel.pack()
+                topLevel.update()
+                self.screen.update()
+                time.sleep(3)
+                topLevel.destroy()
+                return
+            else:
+                startServer = threading.Thread(target= lambda: self.sendSubject(), daemon=True)
+                self.changeWindow()
+                startServer.start()
+                self.SERVER_STARTED = True
         else:
             pass
 
     # ----- Send subject to client (application) -----
     def sendSubject(self):
-
+        '''
+        ----- Handles multi-client connections and sends them the subject when they connect -----
+        '''
+        # ----- Starting amount of participants -----
+        check = 0
         while True:
             try:
                 newClient, newAddress = self.server.accept()
@@ -114,13 +140,17 @@ class GUI:
                 newClient.send(f'{self.SUBJECT}\n'.encode())
                 recvd = newClient.recv(1024).decode()
                 print(f'{newAddress} sent {recvd}')
-                threading.Thread(target=self.clientHandler, args=(newClient, newAddress), daemon=True).start()
-                print("will wait to a new client.")
+                if check < self.MAX_CLIENTS:
+                    threading.Thread(target=self.clientHandler, args=(newClient, newAddress), daemon=True).start()
+                    print("will wait to a new client.")
             except:
                 pass
     
     # ----- Get associations from clients -----
     def clientHandler(self, client, address):
+        '''
+        ----- Handles multi-client messages and appends it the the associations list ----- 
+        '''
         while True:
             try:
                 data = client.recv(1024).decode()
@@ -140,6 +170,9 @@ class GUI:
     
     # ----- Change the window after server starts -----
     def changeWindow(self):
+        '''
+        ----- Destroys the first settings window and creates the Brainstorm window ----- 
+        '''
 
         # ----- Set values for images needed for buttons -----
         stop = CTkImage(light_image=Image.open(self.IMAGE_FOLDER+r"\stop.png"))
@@ -165,16 +198,25 @@ class GUI:
 
     # ----- Change Name State -----
     def nameStateChange(self):
+        '''
+        ----- NameStateButton command that changes the associations in the screen (shows the name / removes them) -----
+        '''
         self.SHOW_NAMES = not self.SHOW_NAMES
         self.updateAssociations()
 
     # ----- Get selected Participants amount -----
     def getParticipantsAmount(self, choice):
+        '''
+        ----- Gets chosen participants amount and sets it to the server -----
+        '''
         self.MAX_CLIENTS = choice.split(" ")[0]
         print(self.MAX_CLIENTS)
         self.optionsParticipants.set(choice)
         
     def updateAssociations(self): 
+        '''
+        ----- Resets associations and updates it to the newest form (happens when nameState changes or a new Association has been recieved) -----
+        '''
         self.canvas.delete('all')
         # ----- Show the associations -----
         for a in self.associations:
