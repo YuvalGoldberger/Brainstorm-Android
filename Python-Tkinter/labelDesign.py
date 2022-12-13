@@ -7,7 +7,7 @@ class TextDesign:
     
     def __init__(self):
         '''
-        ----- Creates a randomized list of options for the text -----
+        * Creates a randomized list of options for the text 
         '''
 
         # ----- Randomize font + Style -----

@@ -35,7 +35,7 @@ class GUI:
 
     def __init__(self):
         '''
-        ----- Sets defualt values, creates a screen and a server. -----
+        * Sets defualt values, creates a screen and a server.
         '''
         # ----- Some defualt Values (that need to be restarted when restarting (calling __init__ again)) -----
         self.MAX_CLIENTS = 50
@@ -99,7 +99,7 @@ class GUI:
     # ----- Start the server thread -----
     def startServer(self):
         '''
-        ----- Starts the server thread -----
+        * Starts the server thread.
         '''
         if self.SERVER_STARTED == False:
             self.SUBJECT = self.subjectEntry.get()
@@ -125,7 +125,7 @@ class GUI:
     # ----- Send subject to client (application) -----
     def sendSubject(self):
         '''
-        ----- Handles multi-client connections and sends them the subject when they connect -----
+        * Handles multi-client connections and sends them the subject when they connect 
         '''
         # ----- Starting amount of participants -----
         check = 0
@@ -149,7 +149,7 @@ class GUI:
     # ----- Get associations from clients -----
     def clientHandler(self, client, address):
         '''
-        ----- Handles multi-client messages and appends it the the associations list ----- 
+        * Handles multi-client messages and appends it the the associations list  
         '''
         while True:
             try:
@@ -171,7 +171,7 @@ class GUI:
     # ----- Change the window after server starts -----
     def changeWindow(self):
         '''
-        ----- Destroys the first settings window and creates the Brainstorm window ----- 
+        * Destroys the first settings window and creates the Brainstorm window  
         '''
 
         # ----- Set values for images needed for buttons -----
@@ -199,7 +199,7 @@ class GUI:
     # ----- Change Name State -----
     def nameStateChange(self):
         '''
-        ----- NameStateButton command that changes the associations in the screen (shows the name / removes them) -----
+        * NameStateButton command that changes the associations in the screen (shows the name / removes them) 
         '''
         self.SHOW_NAMES = not self.SHOW_NAMES
         self.updateAssociations()
@@ -207,7 +207,7 @@ class GUI:
     # ----- Get selected Participants amount -----
     def getParticipantsAmount(self, choice):
         '''
-        ----- Gets chosen participants amount and sets it to the server -----
+        * Gets chosen participants amount and sets it to the server 
         '''
         self.MAX_CLIENTS = choice.split(" ")[0]
         print(self.MAX_CLIENTS)
@@ -215,7 +215,7 @@ class GUI:
         
     def updateAssociations(self): 
         '''
-        ----- Resets associations and updates it to the newest form (happens when nameState changes or a new Association has been recieved) -----
+        * Resets associations and updates it to the newest form (happens when nameState changes or a new Association has been recieved) 
         '''
         self.canvas.delete('all')
         # ----- Show the associations -----
