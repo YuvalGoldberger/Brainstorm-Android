@@ -30,7 +30,7 @@ public class ConnectionActivity extends AppCompatActivity {
         // ----- Cast _port to int -----
         int port = Integer.parseInt(_port);
 
-        // ----- Start a thread since MainUIThread cannot use sockets ----- 10.38.53.148
+        // ----- Start a thread since MainUIThread cannot use sockets -----
         Thread connectionThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -52,7 +52,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
                     // ----- Go to next page -----
                     Intent forwardIntent = new Intent(getApplicationContext(), SendActivity.class);
-                    forwardIntent.putExtra("ip_port_subj_name", new String[] {ip, _port, subject, name});
+                    forwardIntent.putExtra("ip_port_subj_name", new String[] { ip, _port, subject, name });
                     startActivity(forwardIntent);
 
                 } catch (IOException e) {
