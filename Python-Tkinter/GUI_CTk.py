@@ -42,6 +42,7 @@ class GUI:
         self.SERVER_STARTED = False
         self.SUBJECT = ''
         self.associations = []
+        self.clients = []
         self.SHOW_NAMES = False
 
         # ----- Set screen appearance + start server -----
@@ -51,6 +52,7 @@ class GUI:
         self.server = socket.socket()
         self.server.bind(('0.0.0.0', 25565))
         self.server.listen(self.MAX_CLIENTS)
+        threading.Thread(target=self.startServer).start()
 
         self.screen = CTk()
 
@@ -83,12 +85,12 @@ class GUI:
         self.subjectEntry.place(relx=0.5, rely = 0.43, anchor=CENTER)
 
         # ----- Button to show server's state -----
-        self.serverUpButton = CTkButton(self.screen, image=self.redCircle, font=("Assistant Medium", 15), text=".השרת לא פעיל", hover=False, fg_color=self.RED_FG)
+        self.serverUpButton = CTkButton(self.screen, image=self.redCircle, font=("Assistant Medium", 15), text=".הסיעור לא פעיל", hover=False, fg_color=self.RED_FG)
         self.serverUpButton.place(relx=0.01, rely = 0.98, anchor=SW)
 
         # ----- Button to start brainstorm (send subject and start server) -----
 
-        sendSubjectButton = CTkButton(self.screen, text="התחל סיעור מוחות", image=brain, font=("Assistant Medium", 15), command= self.startServer)
+        sendSubjectButton = CTkButton(self.screen, text="התחל סיעור מוחות", image=brain, font=("Assistant Medium", 15), command= self.subjButtonSend)
         sendSubjectButton.place(relx = 0.5, rely = 0.55, anchor=CENTER)
 
         # ----- Mainloop -----
@@ -97,7 +99,7 @@ class GUI:
     # ------------------------- SERVER RELATED -------------------------
 
     # ----- Start the server thread -----
-    def startServer(self):
+    def subjButtonSend(self):
         '''
         * Starts the server thread.
         '''
@@ -115,15 +117,15 @@ class GUI:
                 topLevel.destroy()
                 return
             else:
-                startServer = threading.Thread(target= lambda: self.sendSubject(), daemon=True)
+                for client in self.clients:
+                    client[0].send(f'{self.SUBJECT}\n'.encode())   
                 self.changeWindow()
-                startServer.start()
                 self.SERVER_STARTED = True
         else:
             pass
 
     # ----- Send subject to client (application) -----
-    def sendSubject(self):
+    def startServer(self):
         '''
         * Handles multi-client connections and sends them the subject when they connect 
         '''
@@ -132,14 +134,9 @@ class GUI:
         while True:
             try:
                 newClient, newAddress = self.server.accept()
+                self.clients.append((newClient, newAddress))
                 print(newAddress, "connected")
                 
-                if self.SUBJECT == '' or self.SUBJECT is None:
-                    self.SUBJECT = "No subject has been chosen."
-
-                newClient.send(f'{self.SUBJECT}\n'.encode())
-                recvd = newClient.recv(1024).decode()
-                print(f'{newAddress} sent {recvd}')
                 if check < self.MAX_CLIENTS:
                     threading.Thread(target=self.clientHandler, args=(newClient, newAddress), daemon=True).start()
                     print("will wait to a new client.")
@@ -153,7 +150,7 @@ class GUI:
         '''
         while True:
             try:
-                data = client.recv(1024).decode()
+                data = client.recv(1024).decode() # name:breakHere:message
                 name = data.split(":breakHere:")[0]
                 msg = data.split(":breakHere:")[1]
                 print(f"{name} sent {msg}")
@@ -189,7 +186,7 @@ class GUI:
         self.canvas.pack()
 
         # ----- Server status -----
-        self.serverUpButton = CTkButton(self.screen, image=self.greenCircle, font=("Assistant Medium", 15), text=".השרת פעיל", hover=False, fg_color=self.GREEN_FG)
+        self.serverUpButton = CTkButton(self.screen, image=self.greenCircle, font=("Assistant Medium", 15), text=".הסיעור פעיל", hover=False, fg_color=self.GREEN_FG)
         self.serverUpButton.place(relx=0.01, rely = 0.98, anchor=SW)
 
         # ----- Close Brainstorm Button -----

@@ -15,7 +15,7 @@ import java.io.*;
 public class MainActivity extends AppCompatActivity {
 
     private Button connectButton;
-    private EditText IP, Port, Name;
+    private EditText IP, Name;
     private static Socket client;
 
     @Override
@@ -38,19 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // ----- Get the String values from EditTexts -----
                 IP = findViewById(R.id.ip);
-                Port = findViewById(R.id.port);
                 Name = findViewById(R.id.name);
 
                 String ip = IP.getText().toString();
-                String _port = Port.getText().toString();
                 String name = Name.getText().toString();
 
                 // ----- Check if user didn't enter ip, port or name -----
                 if(ip.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "הכנס כתובת אייפי.", Toast.LENGTH_SHORT).show();
-                    return;
-                } if(_port.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "הכנס את פורט השרת.", Toast.LENGTH_SHORT).show();
                     return;
                 } if (name.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "הכנס את שמך.", Toast.LENGTH_SHORT).show();
@@ -59,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Create an intent of the ConnectionActivity page, add the ip, port and name and start the new activity -----
                 Intent intent = new Intent(getApplicationContext(), ConnectionActivity.class);
-                intent.putExtra("ip_port_name", new String[] { ip, _port, name });
+                intent.putExtra("ip_name", new String[] { ip, name });
                 startActivity(intent);
 
                 finish();

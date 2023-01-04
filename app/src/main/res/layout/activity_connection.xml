@@ -11,15 +11,15 @@
     tools:context=".ConnectionActivity">
 
     <TextView
-        android:id="@+id/connecting_text"
-        android:layout_width="match_parent"
+        android:id="@+id/waitingForSubject"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="200dp"
         android:fontFamily="@font/assistant_extrabold"
-        android:text="Connecting to Server"
+        android:text="ממתין לקבלת נושא"
+        android:layout_centerHorizontal="true"
         android:textColor="@color/black"
-        android:textSize="40sp"
-         />
+        android:textSize="40sp" />
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/loading"

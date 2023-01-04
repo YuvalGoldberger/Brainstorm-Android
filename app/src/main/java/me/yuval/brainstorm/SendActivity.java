@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,8 @@ public class SendActivity extends AppCompatActivity {
     private Socket client;
     private BufferedReader in;
     private String subj = "";
+    private TextView timer;
+    private boolean sent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +33,14 @@ public class SendActivity extends AppCompatActivity {
         setContentView(R.layout.activity_send);
         // ----- Get IP, Port, Subject and Name ----
         Intent getExtrasFromMainIntent = getIntent();
-        String[] arr = getExtrasFromMainIntent.getStringArrayExtra("ip_port_subj_name");
-        String ip = arr[0];
-        String port = arr[1];
-        // ----- Shows what server you are connected to -----
-        Toast.makeText(getApplicationContext(), "Connected to " + ip + ":" + port, Toast.LENGTH_SHORT).show();
-        subj = arr[2];
-        Toast.makeText(getApplicationContext(), subj, Toast.LENGTH_SHORT).show();
+        String[] arr = getExtrasFromMainIntent.getStringArrayExtra("subj_name");
+
 
         // ----- Gets the name and subject from last intent and sets it in the TextView -----
-        String name = arr[3];
+        subj = arr[0];
+        Toast.makeText(getApplicationContext(), subj, Toast.LENGTH_SHORT).show();
+
+        String name = arr[1];
         TextView nameTextView = findViewById(R.id.name);
         nameTextView.setText("מחובר כ: " + name);
 
@@ -57,6 +58,23 @@ public class SendActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "client is null", Toast.LENGTH_SHORT).show();
             startActivity(backwardIntent);
         }
+
+        // ----- Set countdown of 30000ms (30s) -----
+        timer = findViewById(R.id.timer);
+        new CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timer.setText("הזמן שנותר לענות: " + millisUntilFinished / 1000);
+            }
+
+            @Override
+            public void onFinish() {
+                if(!sent) {
+                    Toast.makeText(getApplicationContext(), "לא שלחת אסוציאציה בזמן!", Toast.LENGTH_SHORT).show();
+                    startActivity(backwardIntent);
+                }
+            }
+        }.start();
 
         // ----- Start thread again as MainUIThread cannot use sockets -----
         Thread sendThread = new Thread(new Runnable() {
@@ -80,6 +98,7 @@ public class SendActivity extends AppCompatActivity {
                     out1.println(name + ":breakHere:" + message);
                     Toast.makeText(getApplicationContext(), "Sent " + message + " from " + name, Toast.LENGTH_SHORT).show();
 
+                    sent = true;
                     finish();
                     startActivity(getIntent());
                     overridePendingTransition(0, 0);
